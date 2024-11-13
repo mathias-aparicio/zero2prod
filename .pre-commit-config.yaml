@@ -1,0 +1,25 @@
+# Since cargo is a system command language is system for every hook
+# By default each changed files are passed to a hook
+repos:
+  - repo: local
+    hooks:
+      - id: fmt
+        name: fmt
+        entry: cargo fmt
+        language: system
+        pass_filenames: false # We don't want to pass any files to cargo fmt
+
+      - id: clippy
+        name: clippy
+        entry: cargo clippy -- -D warnings
+        language: system
+        pass_filenames: false
+
+      - id: test
+        name: test
+        entry: cargo test
+        language: system
+        pass_filenames: false
+        stages: [pre-push]
+
+
