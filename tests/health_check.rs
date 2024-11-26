@@ -1,5 +1,6 @@
+use sqlx::{Connection, PgConnection};
 use std::net::TcpListener;
-use zero2prod::startup::run;
+use zero2prod::{configuration::get_configuration, startup::run};
 fn spawn_app() -> String {
     // Port 0 means that the OS will try to find an available port
     let listener = TcpListener::bind("127.0.0.1:0").expect("Failed to bind random port");
@@ -39,6 +40,11 @@ async fn health_check_works() {
 async fn subscribe_returns_a_200_for_valid_data() {
     // Arrange
     let address = spawn_app();
+    let configuration = get_configuration().expect("Failed to read configuration");
+    let connection_string = configuration.database.connection_string();
+    let connection = PgConnection::connect(&connection_string)
+        .await
+        .expect("Failled");
     let client = reqwest::Client::new();
 
     // Act
